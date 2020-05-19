@@ -5,6 +5,7 @@ import com.example.application.backend.domain.Day;
 import com.example.application.backend.service.CoronaApi;
 import com.example.application.backend.service.CoronaService;
 import com.example.application.backend.service.GeoIpService;
+import com.example.application.backend.service.model.CountryDTO;
 import com.example.application.backend.service.model.LatestData;
 import com.example.application.backend.service.model.Timeline;
 import org.springframework.cache.annotation.CacheEvict;
@@ -47,7 +48,7 @@ public class CoronaServiceImpl implements CoronaService {
         latestData.setDeaths(lastTimeLine.getDeaths());
         latestData.setRecovered(lastTimeLine.getRecovered());
 
-        com.example.application.backend.service.model.Country world = new com.example.application.backend.service.model.Country();
+        CountryDTO world = new CountryDTO();
         world.setCode(GeoIpService.WORLD_ISO_CODE);
         world.setName("Global");
         world.setPopulation(7800000000L);
@@ -67,7 +68,7 @@ public class CoronaServiceImpl implements CoronaService {
         }
     }
 
-    private Country toDomain(com.example.application.backend.service.model.Country c) {
+    private Country toDomain(CountryDTO c) {
         if (c != null) {
             List<Day> days = new ArrayList<>();
             if (c.getTimeline() != null) {

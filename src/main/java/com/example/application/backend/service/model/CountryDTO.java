@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class Country {
+public class CountryDTO {
 
     private Coordinates coordinates;
     private String name;

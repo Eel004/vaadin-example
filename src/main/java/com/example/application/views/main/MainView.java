@@ -57,7 +57,7 @@ public class MainView extends AppLayout {
     private static Tab[] getAvailableTabs() {
         final List<Tab> tabs = new ArrayList<>();
         tabs.add(createTab("Dashboard", CoronaDashboard.class));
-        tabs.add(createTab("Master-Detail", MasterDetailView.class));
+        tabs.add(createTab("Overview", MasterDetailView.class));
         tabs.add(createTab("Using Web Component", UsingWebComponentView.class));
         return tabs.toArray(new Tab[tabs.size()]);
     }

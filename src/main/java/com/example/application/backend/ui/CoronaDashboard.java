@@ -73,7 +73,7 @@ public class CoronaDashboard extends Div implements HasUrlParameter<String>, Aft
         } catch (FeignException e) {
             log.info("Cannot find ISO code: " + isoCode);
             coronaChart.setCountry(coronaService.getById(GeoIpService.WORLD_ISO_CODE));
-            Notification.show("Country not found. Showing global data.", 5000, Notification.Position.MIDDLE);
+            Notification.show("CountryDTO not found. Showing global data.", 5000, Notification.Position.MIDDLE);
 
         } catch (Exception e) {
             log.error("Error fetching data", e);

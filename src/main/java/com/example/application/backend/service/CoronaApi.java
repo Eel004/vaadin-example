@@ -1,6 +1,6 @@
 package com.example.application.backend.service;
 
-import com.example.application.backend.service.model.Country;
+import com.example.application.backend.service.model.CountryDTO;
 import com.example.application.backend.service.model.DataWrapper;
 import com.example.application.backend.service.model.Timeline;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -13,10 +13,10 @@ import java.util.List;
 public interface CoronaApi {
 
     @RequestMapping(value = "/countries")
-    DataWrapper<List<Country>> countries();
+    DataWrapper<List<CountryDTO>> countries();
 
     @RequestMapping(value = "/countries/{code}")
-    DataWrapper<Country> countries(@PathVariable String code);
+    DataWrapper<CountryDTO> countries(@PathVariable String code);
 
     @RequestMapping(value = "timeline")
     DataWrapper<List<Timeline>> timeline();

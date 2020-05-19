@@ -47,7 +47,7 @@ public class CoronaChart extends VerticalLayout {
         countrySelector = new ComboBox<>();
         countrySelector.setItems(coronaService.findAll());
         countrySelector.setItemLabelGenerator(Country::getName);
-        countrySelector.setPlaceholder("Country");
+        countrySelector.setPlaceholder("CountryDTO");
         countrySelector.setWidth("400px");
 
         Board board = new Board();
