@@ -11,14 +11,13 @@ import com.vaadin.flow.router.Route;
 @PageTitle("Using Web Component")
 public class UsingWebComponentView extends VerticalLayout {
 
-    private static String[] helloButtonColors = {"red", "green", "blue", "yellow", "orange", "purple", "pink", "black"};
-
     public UsingWebComponentView() {
         getStyle().set("flex-direction", "column");
 
         Button changeBackgroundButton = new Button("Change background");
         Button getInputValueButton = new Button("Get input value");
         MapChart mapChart = new MapChart();
+        mapChart.setWidthFull();
 
         add(changeBackgroundButton, getInputValueButton, mapChart);
     }

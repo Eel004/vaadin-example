@@ -1,29 +1,40 @@
 import React, { useState, memo } from "react";
+import ReactDOM from "react-dom";
+import retargetEvents from 'react-shadow-dom-retarget-events';
 import ReactTooltip from "react-tooltip";
 import {
     ComposableMap,
     Geographies,
     Geography
-} from "../react-simple-maps-edited";
+} from "./react-simple-maps-modified";
 
 const geoUrl =
     "https://raw.githubusercontent.com/zcreativelabs/react-simple-maps/master/topojson-maps/world-110m.json";
 
-const rounded = num => {
-    if (num > 1000000000) {
-        return Math.round(num / 100000000) / 10 + "Bn";
-    } else if (num > 1000000) {
-        return Math.round(num / 100000) / 10 + "M";
-    } else {
-        return Math.round(num / 100) / 10 + "K";
-    }
-};
-
 const MapChart = () => {
     const [content, setContent] = useState("");
+    const [clientX, setClientX] = useState(0);
+    const [clientY, setClientY] = useState(0);
+    const [tooltipVisible, setTooltipVisible] = useState('hidden');
+
+    const styles = {
+        position: 'absolute',
+        top: (clientY + 20) + 'px',
+        left: (clientX + 20) + 'px',
+        width: "120px",
+        backgroundColor: "black",
+        color: "#fff",
+        textAlign: "center",
+        borderRadius: "6px",
+        padding: "5px 0",
+        position: "absolute",
+        zIndex: "1",
+        visibility: tooltipVisible
+    };
+
     return (
         <>
-            <ReactTooltip>{content}</ReactTooltip>
+            <span className="tooltip-span" style={styles}>{content}</span>
             <ComposableMap data-tip="" projectionConfig={{ scale: 200 }}>
                 <Geographies geography={geoUrl}>
                     {({ geographies }) =>
@@ -31,13 +42,19 @@ const MapChart = () => {
                             <Geography
                                 key={geo.rsmKey}
                                 geography={geo}
-                                onMouseEnter={() => {
+                                onMouseEnter={(e) => {
                                     const { NAME, POP_EST } = geo.properties;
-                                    console.log(geo);
-                                    setContent(`${NAME} — ${rounded(POP_EST)}`);
+                                    setContent(`${NAME}`);
+                                    setClientX(e.clientX);
+                                    setClientY(e.clientY);
+                                    setTooltipVisible('visible');
                                 }}
                                 onMouseLeave={() => {
                                     setContent("");
+                                    setTooltipVisible('hidden');
+                                }}
+                                onMouseDown={() => {
+                                    console.log(`You choose: ${content}`);
                                 }}
                                 style={{
                                     default: {
@@ -62,4 +79,16 @@ const MapChart = () => {
     );
 };
 
-export default memo(MapChart);
+class MapChartComponent extends HTMLElement {
+    constructor() {
+        super();
+        this.mountPoint = document.createElement('div');
+        const shadowRoot = this.attachShadow({ mode: 'open' });
+        shadowRoot.appendChild(this.mountPoint);
+
+        ReactDOM.render(<MapChart />, this.mountPoint);
+        retargetEvents(shadowRoot);
+    }
+}
+
+window.customElements.define('map-chart-component', MapChartComponent);
