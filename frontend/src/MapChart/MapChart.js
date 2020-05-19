@@ -11,8 +11,9 @@ import {
 const geoUrl =
     "https://raw.githubusercontent.com/zcreativelabs/react-simple-maps/master/topojson-maps/world-110m.json";
 
-const MapChart = () => {
-    const [content, setContent] = useState("");
+const MapChart = (props) => {
+    const [countryName, setCountryName] = useState("");
+    const [countryIsoCode, setCountryIsoCode] = useState("");
     const [clientX, setClientX] = useState(0);
     const [clientY, setClientY] = useState(0);
     const [tooltipVisible, setTooltipVisible] = useState('hidden');
@@ -34,8 +35,8 @@ const MapChart = () => {
 
     return (
         <>
-            <span className="tooltip-span" style={styles}>{content}</span>
-            <ComposableMap data-tip="" projectionConfig={{ scale: 200 }}>
+            <span className="tooltip-span" style={styles}>{countryName}</span>
+            <ComposableMap data-tip="" projectionConfig={{ scale: 100 }} projection="geoMercator">
                 <Geographies geography={geoUrl}>
                     {({ geographies }) =>
                         geographies.map(geo => (
@@ -43,18 +44,21 @@ const MapChart = () => {
                                 key={geo.rsmKey}
                                 geography={geo}
                                 onMouseEnter={(e) => {
-                                    const { NAME, POP_EST } = geo.properties;
-                                    setContent(`${NAME}`);
+                                    const { NAME, POP_EST, ISO_A2 } = geo.properties;
+                                    setCountryName(`${NAME}`);
+                                    setCountryIsoCode(`${ISO_A2}`);
                                     setClientX(e.clientX);
                                     setClientY(e.clientY);
                                     setTooltipVisible('visible');
                                 }}
                                 onMouseLeave={() => {
-                                    setContent("");
+                                    setCountryName("");
+                                    setCountryIsoCode("");
                                     setTooltipVisible('hidden');
                                 }}
-                                onMouseDown={() => {
-                                    console.log(`You choose: ${content}`);
+                                onMouseUp={() => {
+                                    console.log(geo.properties);
+                                    props.countryClickedHandler(countryIsoCode);
                                 }}
                                 style={{
                                     default: {
@@ -86,8 +90,21 @@ class MapChartComponent extends HTMLElement {
         const shadowRoot = this.attachShadow({ mode: 'open' });
         shadowRoot.appendChild(this.mountPoint);
 
-        ReactDOM.render(<MapChart />, this.mountPoint);
+        ReactDOM.render(<MapChart countryClickedHandler={(newIsoCode) => {this.selectedCountryIsoCode = newIsoCode;}}/>, this.mountPoint);
         retargetEvents(shadowRoot);
+    }
+
+    static get observedAttributes() {
+      return ['selectedcountryisocode'];
+    }
+
+    get selectedCountryIsoCode() {
+        return this.getAttribute('selectedcountryisocode');
+    }
+
+    set selectedCountryIsoCode(newIsoCode) {
+        console.log("New country ISO code: " + newIsoCode);
+        this.setAttribute('selectedcountryisocode', newIsoCode);
     }
 }
 

@@ -1,10 +1,14 @@
 package com.example.application.backend.ui;
 
+import com.example.application.backend.domain.Country;
 import com.example.application.backend.service.CoronaService;
 import com.example.application.backend.service.GeoIpService;
 import com.example.application.component.CoronaChart;
 import com.example.application.views.main.MainView;
+import com.vaadin.flow.component.AbstractField;
+import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
@@ -15,16 +19,14 @@ import com.vaadin.flow.server.VaadinRequest;
 import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.context.ApplicationContext;
 
 import javax.annotation.PostConstruct;
 
 @Slf4j
-//@CssImport(value = "./styles/views/corona/styles.css", include = "vaadin-chart-default-theme")
 @CssImport(value = "./styles/views/corona/charts.css", themeFor = "vaadin-chart", include = "vaadin-chart-default-theme")
 @Route(value = "coronadashboard", layout = MainView.class)
 @RouteAlias(value = "", layout = MainView.class)
-@Component
 public class CoronaDashboard extends Div implements HasUrlParameter<String>, AfterNavigationObserver, HasDynamicTitle {
 
     @Autowired
@@ -34,6 +36,8 @@ public class CoronaDashboard extends Div implements HasUrlParameter<String>, Aft
     private GeoIpService geoIpService;
 
     @Autowired
+    private ApplicationContext applicationContext;
+
     private CoronaChart coronaChart;
 
     private String selectedCountryCode;
@@ -43,13 +47,16 @@ public class CoronaDashboard extends Div implements HasUrlParameter<String>, Aft
         HorizontalLayout title = new HorizontalLayout(new H1("Covid-19 Dashboard"));
         title.addClassName("title");
 
+        coronaChart = applicationContext.getBean(CoronaChart.class, createCountrySelectorListener());
         add(coronaChart);
+    }
 
-        coronaChart.setCountrySelectorListener(event -> {
+    private HasValue.ValueChangeListener<AbstractField.ComponentValueChangeEvent<ComboBox<Country>, Country>> createCountrySelectorListener() {
+        return event -> {
             if (event.isFromClient()) {
                 UI.getCurrent().navigate(CoronaDashboard.class, event.getValue().getIsoCode());
             }
-        });
+        };
     }
 
     @Override

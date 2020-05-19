@@ -13,7 +13,6 @@ import com.vaadin.flow.component.board.Row;
 import com.vaadin.flow.component.charts.model.ChartType;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.shared.Registration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -33,7 +32,15 @@ public class CoronaChart extends VerticalLayout {
     private Row overviewRow = new Row();
     private Row chartRow = new Row();
     private ComboBox<Country> countrySelector;
-    private Registration countrySelectorListenerRegistration;
+    private HasValue.ValueChangeListener<AbstractField.ComponentValueChangeEvent<ComboBox<Country>, Country>> countrySelectorListener;
+
+    public CoronaChart() {
+        this(null);
+    }
+
+    public CoronaChart(HasValue.ValueChangeListener<AbstractField.ComponentValueChangeEvent<ComboBox<Country>, Country>> countrySelectorListener) {
+        this.countrySelectorListener = countrySelectorListener;
+    }
 
     @PostConstruct
     public void init() {
@@ -49,16 +56,15 @@ public class CoronaChart extends VerticalLayout {
         board.addRow(chartRow);
         add(board);
 
-        countrySelectorListenerRegistration = countrySelector.addValueChangeListener(event -> {
-            if (event.isFromClient()) {
-                setCountry(coronaService.getById(event.getValue().getIsoCode()));
-            }
-        });
-    }
-
-    public void setCountrySelectorListener(HasValue.ValueChangeListener<AbstractField.ComponentValueChangeEvent<ComboBox<Country>, Country>> listener) {
-        countrySelectorListenerRegistration.remove();
-        countrySelectorListenerRegistration = countrySelector.addValueChangeListener(listener);
+        if (countrySelectorListener != null) {
+            countrySelector.addValueChangeListener(countrySelectorListener);
+        } else {
+            countrySelector.addValueChangeListener(event -> {
+                if (event.isFromClient()) {
+                    setCountry(coronaService.getById(event.getValue().getIsoCode()));
+                }
+            });
+        }
     }
 
     public Country getCurrentCountry() {
