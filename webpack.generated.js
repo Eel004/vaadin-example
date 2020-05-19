@@ -119,6 +119,16 @@ module.exports = {
       {
         test: /\.css$/i,
         use: ['raw-loader']
+      },
+      {
+        test: /\.jsx?$/,         // Match both .js and .jsx files
+        exclude: /node_modules/,
+        loader: "babel-loader",
+        query:
+            {
+              presets:['@babel/preset-react',
+                {'plugins': ['@babel/plugin-proposal-class-properties']}]
+            }
       }
     ]
   },
