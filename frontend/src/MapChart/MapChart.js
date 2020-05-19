@@ -18,9 +18,10 @@ const MapChart = () => {
     const [tooltipVisible, setTooltipVisible] = useState('hidden');
 
     const styles = {
-        position: 'absolute',
+        visibility: tooltipVisible,
         top: (clientY + 20) + 'px',
         left: (clientX + 20) + 'px',
+        position: 'absolute',
         width: "120px",
         backgroundColor: "black",
         color: "#fff",
@@ -28,8 +29,7 @@ const MapChart = () => {
         borderRadius: "6px",
         padding: "5px 0",
         position: "absolute",
-        zIndex: "1",
-        visibility: tooltipVisible
+        zIndex: "1"
     };
 
     return (
