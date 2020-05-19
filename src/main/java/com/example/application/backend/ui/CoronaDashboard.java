@@ -4,71 +4,61 @@ import com.example.application.backend.domain.Country;
 import com.example.application.backend.domain.Day;
 import com.example.application.backend.service.CoronaService;
 import com.example.application.backend.service.GeoIpService;
-import com.vaadin.flow.component.Text;
+import com.example.application.views.main.MainView;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.board.Board;
 import com.vaadin.flow.component.board.Row;
 import com.vaadin.flow.component.charts.model.ChartType;
 import com.vaadin.flow.component.combobox.ComboBox;
-import com.vaadin.flow.component.cookieconsent.CookieConsent;
 import com.vaadin.flow.component.dependency.CssImport;
-import com.vaadin.flow.component.html.Anchor;
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.H1;
-import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.*;
-import com.vaadin.flow.server.PWA;
 import com.vaadin.flow.server.VaadinRequest;
-import com.vaadin.flow.theme.Theme;
-import com.vaadin.flow.theme.lumo.Lumo;
 import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
 @Slf4j
-@Theme(value = Lumo.class, variant = Lumo.DARK)
-@CssImport(value = "./styles/views/corona/styles.css", include = "vaadin-chart-default-theme")
+//@CssImport(value = "./styles/views/corona/styles.css", include = "vaadin-chart-default-theme")
 @CssImport(value = "./styles/views/corona/charts.css", themeFor = "vaadin-chart", include = "vaadin-chart-default-theme")
-@Route("coronadashboard")
+@Route(value = "coronadashboard", layout = MainView.class)
+@RouteAlias(value = "", layout = MainView.class)
 public class CoronaDashboard extends Div implements HasUrlParameter<String>, AfterNavigationObserver, HasDynamicTitle {
 
-    private final CoronaService coronaService;
+    @Autowired
+    private CoronaService coronaService;
+
+    @Autowired
+    private GeoIpService geoIpService;
 
     private Row overviewRow = new Row();
     private Row chartRow = new Row();
     private ComboBox<Country> countrySelector;
 
-    private final GeoIpService geoIpService;
+    private String selectedCountryCode;
+
 
     public CoronaDashboard(GeoIpService geoIpService, CoronaService covidService) {
         this.geoIpService = geoIpService;
         this.coronaService = covidService;
-
-        Image icon = new Image("icons/icon.png", "Icon");
-        icon.addClassName("icon");
-        HorizontalLayout title = new HorizontalLayout(
-                new H1("Covid-19 Dashboard"),
-                icon
-        );
+        HorizontalLayout title = new HorizontalLayout(new H1("Covid-19 Dashboard"));
         title.addClassName("title");
-        title.setVerticalComponentAlignment(FlexComponent.Alignment.END, icon);
 
         countrySelector = new ComboBox<>();
         countrySelector.setItems(covidService.findAll());
         countrySelector.setItemLabelGenerator(Country::getName);
         countrySelector.setPlaceholder("Country");
+        countrySelector.setWidth("400px");
 
         Board board = new Board();
         board.addRow(countrySelector);
         board.addRow(overviewRow);
         board.addRow(chartRow);
-
-        add(new CookieConsent(), title, board);
+        add(board);
 
         countrySelector.addValueChangeListener(event -> {
             if (event.isFromClient()) {
@@ -80,15 +70,14 @@ public class CoronaDashboard extends Div implements HasUrlParameter<String>, Aft
     @Override
     public void setParameter(BeforeEvent event, @OptionalParameter String isoCode) {
         String ip = getIP();
-
-        if (isoCode == null || isoCode.isEmpty()) {
-            isoCode = geoIpService.getIsoCode(ip);
+        selectedCountryCode = isoCode;
+        if (selectedCountryCode == null || selectedCountryCode.isEmpty()) {
+            selectedCountryCode = geoIpService.getIsoCode(ip);
         }
 
         try {
             log.info(String.format("IP - ISO code: %s - %s", ip, isoCode));
-            setCountry(coronaService.getById(isoCode));
-
+            setCountry(coronaService.getById(selectedCountryCode));
         } catch (FeignException e) {
             log.info("Cannot find ISO code: " + isoCode);
             setCountry(coronaService.getById(GeoIpService.WORLD_ISO_CODE));
@@ -165,6 +154,6 @@ public class CoronaDashboard extends Div implements HasUrlParameter<String>, Aft
 
     @Override
     public void afterNavigation(AfterNavigationEvent afterNavigationEvent) {
-        setCountry(coronaService.getById(GeoIpService.WORLD_ISO_CODE));
+        setCountry(coronaService.getById(selectedCountryCode));
     }
 }

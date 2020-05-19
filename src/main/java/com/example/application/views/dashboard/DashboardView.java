@@ -30,7 +30,7 @@ import com.vaadin.flow.router.RouteAlias;
 import com.example.application.views.main.MainView;
 
 @Route(value = "dashboard1", layout = MainView.class)
-@RouteAlias(value = "", layout = MainView.class)
+@RouteAlias(value = "dashboard-old", layout = MainView.class)
 @PageTitle("Dashboard")
 @CssImport(value = "./styles/views/dashboard/dashboard-view.css", include = "lumo-badge")
 @JsModule("@vaadin/vaadin-lumo-styles/badge.js")
