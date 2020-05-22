@@ -5,6 +5,7 @@ import com.example.application.component.CoronaChart;
 import com.example.application.component.MapChart;
 import com.example.application.views.main.MainView;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.board.Board;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -38,8 +39,13 @@ public class UsingWebComponentView extends HorizontalLayout {
                     .ifPresent(parsedValue -> coronaChart.setCountry(coronaService.getById(parsedValue)));
         });
 
-        add(createWrapperWithCaption("React component", mapChart),
-                createWrapperWithCaption("Vaadin component", coronaChart));
+        VerticalLayout mapChartWrapper = createWrapperWithCaption("React component", mapChart);
+        VerticalLayout coronaChartWrapper = createWrapperWithCaption("Vaadin component", coronaChart);
+
+        Board board = new Board();
+        board.setMaxWidth("none");
+        board.addRow(mapChartWrapper, coronaChartWrapper);
+        add(board);
     }
 
     private VerticalLayout createWrapperWithCaption(String caption, Component wrapped) {

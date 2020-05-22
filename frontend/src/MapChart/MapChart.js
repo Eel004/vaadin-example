@@ -29,7 +29,6 @@ const MapChart = (props) => {
         textAlign: "center",
         borderRadius: "6px",
         padding: "5px 0",
-        position: "absolute",
         zIndex: "1"
     };
 
