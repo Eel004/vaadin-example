@@ -1,11 +1,15 @@
 package com.example.application.views.webcomponent;
 
+import com.example.application.backend.domain.Country;
 import com.example.application.backend.service.CoronaService;
 import com.example.application.component.CoronaChart;
 import com.example.application.component.MapChart;
 import com.example.application.views.main.MainView;
+import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.board.Board;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -22,10 +26,10 @@ import java.util.Optional;
 public class UsingWebComponentView extends HorizontalLayout {
 
     @Autowired
-    private CoronaChart coronaChart;
+    private CoronaService coronaService;
 
     @Autowired
-    private CoronaService coronaService;
+    private CoronaChart coronaChart;
 
     @PostConstruct
     public void init() {
@@ -39,6 +43,8 @@ public class UsingWebComponentView extends HorizontalLayout {
                     .ifPresent(parsedValue -> coronaChart.setCountry(coronaService.getById(parsedValue)));
         });
 
+        coronaChart.addCountrySelectorListener(createCountrySelectorListener(mapChart));
+
         VerticalLayout mapChartWrapper = createWrapperWithCaption("React component", mapChart);
         VerticalLayout coronaChartWrapper = createWrapperWithCaption("Vaadin component", coronaChart);
 
@@ -46,6 +52,14 @@ public class UsingWebComponentView extends HorizontalLayout {
         board.setMaxWidth("none");
         board.addRow(mapChartWrapper, coronaChartWrapper);
         add(board);
+    }
+
+    private HasValue.ValueChangeListener<AbstractField.ComponentValueChangeEvent<ComboBox<Country>, Country>> createCountrySelectorListener(MapChart mapChart) {
+        return event -> {
+            if (event.isFromClient()) {
+                mapChart.getElement().setProperty("selectedCountryIsoCode", event.getValue().getIsoCode());
+            }
+        };
     }
 
     private VerticalLayout createWrapperWithCaption(String caption, Component wrapped) {

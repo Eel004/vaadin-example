@@ -47,7 +47,7 @@ public class CoronaChart extends VerticalLayout {
         countrySelector = new ComboBox<>();
         countrySelector.setItems(coronaService.findAll());
         countrySelector.setItemLabelGenerator(Country::getName);
-        countrySelector.setPlaceholder("CountryDTO");
+        countrySelector.setPlaceholder("Country");
 
         Board board = new Board();
         board.addRow(countrySelector);
@@ -64,6 +64,10 @@ public class CoronaChart extends VerticalLayout {
                 }
             });
         }
+    }
+
+    public void addCountrySelectorListener(HasValue.ValueChangeListener<AbstractField.ComponentValueChangeEvent<ComboBox<Country>, Country>> listener) {
+        countrySelector.addValueChangeListener(listener);
     }
 
     public Country getCurrentCountry() {

@@ -1,4 +1,4 @@
-import React, { useState, memo } from "react";
+import React, { useState, useEffect, memo } from "react";
 import ReactDOM from "react-dom";
 import retargetEvents from 'react-shadow-dom-retarget-events';
 import ReactTooltip from "react-tooltip";
@@ -12,8 +12,9 @@ const geoUrl =
     "https://raw.githubusercontent.com/zcreativelabs/react-simple-maps/master/topojson-maps/world-110m.json";
 
 const MapChart = (props) => {
-    const [countryName, setCountryName] = useState("");
-    const [countryIsoCode, setCountryIsoCode] = useState("");
+    const [hoveringCountryName, setHoveringCountryName] = useState("");
+    const [hoveringCountryIsoCode, setHoveringCountryIsoCode] = useState("");
+    const [selectedCountryIsoCode, setSelectedCountryIsoCode] = useState("");
     const [clientX, setClientX] = useState(0);
     const [clientY, setClientY] = useState(0);
     const [tooltipVisible, setTooltipVisible] = useState('hidden');
@@ -32,9 +33,13 @@ const MapChart = (props) => {
         zIndex: "1"
     };
 
+   useEffect(() => {
+       setSelectedCountryIsoCode(props.selectedCountryIsoCode);
+   }, [props])
+
     return (
         <>
-            <span className="tooltip-span" style={styles}>{countryName}</span>
+            <span className="tooltip-span" style={styles}>{hoveringCountryName}</span>
             <ComposableMap data-tip="" projectionConfig={{ scale: 100 }} projection="geoMercator">
                 <Geographies geography={geoUrl}>
                     {({ geographies }) =>
@@ -44,24 +49,24 @@ const MapChart = (props) => {
                                 geography={geo}
                                 onMouseEnter={(e) => {
                                     const { NAME, POP_EST, ISO_A2 } = geo.properties;
-                                    setCountryName(`${NAME}`);
-                                    setCountryIsoCode(`${ISO_A2}`);
+                                    setHoveringCountryName(`${NAME}`);
+                                    setHoveringCountryIsoCode(`${ISO_A2}`);
                                     setClientX(e.clientX);
                                     setClientY(e.clientY);
                                     setTooltipVisible('visible');
                                 }}
                                 onMouseLeave={() => {
-                                    setCountryName("");
-                                    setCountryIsoCode("");
+                                    setHoveringCountryName("");
+                                    setHoveringCountryIsoCode("");
                                     setTooltipVisible('hidden');
                                 }}
                                 onMouseUp={() => {
-                                    console.log(geo.properties);
-                                    props.countryClickedHandler(countryIsoCode);
+                                    setSelectedCountryIsoCode(hoveringCountryIsoCode);
+                                    props.countryClickedHandler(hoveringCountryIsoCode);
                                 }}
                                 style={{
                                     default: {
-                                        fill: "#D6D6DA",
+                                        fill: selectedCountryIsoCode === geo.properties['ISO_A2'] ? "#F53" : "#D6D6DA",
                                         outline: "none"
                                     },
                                     hover: {
@@ -89,7 +94,7 @@ class MapChartComponent extends HTMLElement {
         const shadowRoot = this.attachShadow({ mode: 'open' });
         shadowRoot.appendChild(this.mountPoint);
 
-        ReactDOM.render(<MapChart countryClickedHandler={(newIsoCode) => {this.selectedCountryIsoCode = newIsoCode;}}/>, this.mountPoint);
+        ReactDOM.render(this.createMapChart(), this.mountPoint);
         retargetEvents(shadowRoot);
     }
 
@@ -102,8 +107,13 @@ class MapChartComponent extends HTMLElement {
     }
 
     set selectedCountryIsoCode(newIsoCode) {
-        console.log("New country ISO code: " + newIsoCode);
         this.setAttribute('selectedcountryisocode', newIsoCode);
+        ReactDOM.render(this.createMapChart(newIsoCode), this.mountPoint);
+    }
+
+    createMapChart(selectedCountryIsoCode) {
+        return (<MapChart countryClickedHandler={(newIsoCode) => {this.selectedCountryIsoCode = newIsoCode;}}
+                          selectedCountryIsoCode={selectedCountryIsoCode}/>);
     }
 }
 
