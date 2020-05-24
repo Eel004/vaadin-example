@@ -28,7 +28,7 @@ import java.util.Optional;
  */
 @JsModule("./styles/shared-styles.js")
 @PWA(name = "Example Project", shortName = "Example Project")
-@Theme(value = Lumo.class, variant = Lumo.DARK)
+@Theme(value = Lumo.class, variant = Lumo.LIGHT)
 public class MainView extends AppLayout {
 
     private final Tabs menu;
@@ -56,8 +56,8 @@ public class MainView extends AppLayout {
 
     private static Tab[] getAvailableTabs() {
         final List<Tab> tabs = new ArrayList<>();
-        tabs.add(createTab("Dashboard", CoronaDashboard.class));
         tabs.add(createTab("Overview", MasterDetailView.class));
+        tabs.add(createTab("Dashboard", CoronaDashboard.class));
         tabs.add(createTab("Using Web Component", UsingWebComponentView.class));
         return tabs.toArray(new Tab[tabs.size()]);
     }

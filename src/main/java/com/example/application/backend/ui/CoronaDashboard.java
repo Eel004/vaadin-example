@@ -26,7 +26,6 @@ import javax.annotation.PostConstruct;
 @Slf4j
 @CssImport(value = "./styles/views/corona/charts.css", themeFor = "vaadin-chart", include = "vaadin-chart-default-theme")
 @Route(value = "coronadashboard", layout = MainView.class)
-@RouteAlias(value = "", layout = MainView.class)
 public class CoronaDashboard extends Div implements HasUrlParameter<String>, AfterNavigationObserver, HasDynamicTitle {
 
     @Autowired
