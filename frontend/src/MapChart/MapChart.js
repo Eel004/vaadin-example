@@ -98,6 +98,11 @@ class MapChartComponent extends HTMLElement {
         retargetEvents(shadowRoot);
     }
 
+    createMapChart(selectedCountryIsoCode) {
+        return (<MapChart countryClickedHandler={(newIsoCode) => {this.selectedCountryIsoCode = newIsoCode;}}
+                          selectedCountryIsoCode={selectedCountryIsoCode}/>);
+    }
+
     static get observedAttributes() {
       return ['selectedcountryisocode'];
     }
@@ -109,11 +114,6 @@ class MapChartComponent extends HTMLElement {
     set selectedCountryIsoCode(newIsoCode) {
         this.setAttribute('selectedcountryisocode', newIsoCode);
         ReactDOM.render(this.createMapChart(newIsoCode), this.mountPoint);
-    }
-
-    createMapChart(selectedCountryIsoCode) {
-        return (<MapChart countryClickedHandler={(newIsoCode) => {this.selectedCountryIsoCode = newIsoCode;}}
-                          selectedCountryIsoCode={selectedCountryIsoCode}/>);
     }
 }
 

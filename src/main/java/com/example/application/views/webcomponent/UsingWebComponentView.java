@@ -10,6 +10,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.board.Board;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -23,6 +24,7 @@ import java.util.Optional;
 
 @Route(value = "using-web-component", layout = MainView.class)
 @PageTitle("Using Web Component")
+@CssImport("./styles/views/webcomponent/using-web-component-view.css")
 public class UsingWebComponentView extends HorizontalLayout {
 
     @Autowired
@@ -46,7 +48,9 @@ public class UsingWebComponentView extends HorizontalLayout {
         coronaChart.addCountrySelectorListener(createCountrySelectorListener(mapChart));
 
         VerticalLayout mapChartWrapper = createWrapperWithCaption("React component", mapChart);
+        mapChartWrapper.addClassName("react-component-layout");
         VerticalLayout coronaChartWrapper = createWrapperWithCaption("Vaadin component", coronaChart);
+        coronaChartWrapper.addClassName("vaadin-component-layout");
 
         Board board = new Board();
         board.setMaxWidth("none");

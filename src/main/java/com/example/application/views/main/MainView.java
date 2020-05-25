@@ -28,7 +28,7 @@ import java.util.Optional;
  */
 @JsModule("./styles/shared-styles.js")
 @PWA(name = "Example Project", shortName = "Example Project")
-@Theme(value = Lumo.class, variant = Lumo.LIGHT)
+@Theme(value = Lumo.class, variant = Lumo.DARK)
 public class MainView extends AppLayout {
 
     private final Tabs menu;
