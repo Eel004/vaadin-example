@@ -5,6 +5,7 @@ import { geoPath as geoPath$1, geoGraticule } from 'd3-geo';
 import { feature } from 'topojson-client';
 import { zoom, zoomIdentity } from 'd3-zoom';
 import { select, event } from 'd3-selection';
+import * as backupWorldMap from './backup-world-map.json';
 
 var _extends = Object.assign || function (target) {
     for (var i = 1; i < arguments.length; i++) {
@@ -212,6 +213,9 @@ function fetchGeographies(url) {
         return res.json();
     }).catch(function (error) {
         console.log("There was a problem when fetching the data: ", error);
+        return new Promise(function(resolve, reject) {
+            resolve(backupWorldMap.default);
+        });
     });
 }
 

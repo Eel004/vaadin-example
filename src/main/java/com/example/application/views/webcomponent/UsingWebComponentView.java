@@ -2,6 +2,7 @@ package com.example.application.views.webcomponent;
 
 import com.example.application.backend.domain.Country;
 import com.example.application.backend.service.CoronaService;
+import com.example.application.backend.service.GeoIpService;
 import com.example.application.component.CoronaChart;
 import com.example.application.component.MapChart;
 import com.example.application.views.main.MainView;
@@ -46,6 +47,7 @@ public class UsingWebComponentView extends HorizontalLayout {
         });
 
         coronaChart.addCountrySelectorListener(createCountrySelectorListener(mapChart));
+        coronaChart.setCountry(coronaService.getById(GeoIpService.WORLD_ISO_CODE));
 
         VerticalLayout mapChartWrapper = createWrapperWithCaption("React component", mapChart);
         mapChartWrapper.addClassName("react-component-layout");
