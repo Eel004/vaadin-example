@@ -18,7 +18,7 @@
     }
 }
 
-@media only screen and (max-width: 1600px) and (min-width: 1441px) {
+@media only screen and (max-width: 1600px) and (min-width: 1533px) {
     .react-component-layout {
         flex-basis: 48% !important;
     }
@@ -28,17 +28,37 @@
     }
 }
 
-@media only screen and (max-width: 1440px) and (min-width: 1025px) {
+@media only screen and (max-width: 1532px) and (min-width: 1486px) {
     .react-component-layout {
-        flex-basis: 42% !important;
+        flex-basis: 46% !important;
     }
 
     .vaadin-component-layout {
-        flex-basis: 58% !important;
+        flex-basis: 54% !important;
     }
 }
 
-@media only screen and (max-width: 1024px) {
+@media only screen and (max-width: 1485px) and (min-width: 1464px) {
+    .react-component-layout {
+        flex-basis: 45% !important;
+    }
+
+    .vaadin-component-layout {
+        flex-basis: 55% !important;
+    }
+}
+
+@media only screen and (max-width: 1463px) and (min-width: 1440px) {
+    .react-component-layout {
+        flex-basis: 41% !important;
+    }
+
+    .vaadin-component-layout {
+        flex-basis: 59% !important;
+    }
+}
+
+@media only screen and (max-width: 1439px) {
     .react-component-layout {
         flex-basis: 100% !important;
     }
