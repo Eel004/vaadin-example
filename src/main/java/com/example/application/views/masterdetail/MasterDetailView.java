@@ -28,7 +28,6 @@ import javax.annotation.PostConstruct;
 @Route(value = "overview", layout = MainView.class)
 @PageTitle("overview")
 @CssImport("./styles/views/masterdetail/master-detail-view.css")
-@HtmlImport(".styles/views/masterdetail/grid-styles.html")
 @RouteAlias(value = "", layout = MainView.class)
 @Slf4j
 public class MasterDetailView extends Div implements AfterNavigationObserver {
@@ -63,8 +62,20 @@ public class MasterDetailView extends Div implements AfterNavigationObserver {
                    }
                    return null;
                 });
-        Grid.Column<Country> recoveredCol = grid.addColumn(new NumberRenderer<>(Country::getTotalRecovered, NUMBER_FORMAT)).setHeader("Total recovered");
-        Grid.Column<Country> deathCol = grid.addColumn(new NumberRenderer<>(Country::getTotalDeaths, NUMBER_FORMAT)).setHeader("Total deaths");
+        Grid.Column<Country> recoveredCol = grid.addColumn(new NumberRenderer<>(Country::getTotalRecovered, NUMBER_FORMAT)).setHeader("Total recovered")
+                .setClassNameGenerator(item -> {
+                    if (item.getTotalRecovered() > 1000) {
+                        return "green-text";
+                    }
+                    return null;
+                });
+        Grid.Column<Country> deathCol = grid.addColumn(new NumberRenderer<>(Country::getTotalDeaths, NUMBER_FORMAT)).setHeader("Total deaths")
+                .setClassNameGenerator(item -> {
+                    if (item.getTotalDeaths() > 1000) {
+                        return "red-text";
+                    }
+                    return null;
+                });
 
         HeaderRow headerRow = grid.appendHeaderRow();
         headerRow.getCell(countryCol).setComponent(createCountryFilter());

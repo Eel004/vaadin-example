@@ -71,7 +71,10 @@ $_documentContainer.innerHTML = `
         <style>
              /* Background needs a stronger selector to not be overridden */
              [part~="cell"].red-text {
-               color: red;
+                color: var(--lumo-error-text-color);
+             }
+             [part~="cell"].green-text {
+                color: var(--lumo-success-text-color);
              }
         </style>
     </template>
