@@ -64,6 +64,17 @@ $_documentContainer.innerHTML = `
       }
     </style>
   </template>
+</dom-module>
+
+<dom-module id="my-grid-styles" theme-for="vaadin-grid">
+    <template>
+        <style>
+             /* Background needs a stronger selector to not be overridden */
+             [part~="cell"].red-text {
+               color: red;
+             }
+        </style>
+    </template>
 </dom-module>`;
 
 document.head.appendChild($_documentContainer.content);
