@@ -8,13 +8,13 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.board.Board;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dependency.CssImport;
-import com.vaadin.flow.component.dependency.HtmlImport;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.grid.HeaderRow;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.renderer.NumberRenderer;
@@ -50,26 +50,26 @@ public class MasterDetailView extends Div implements AfterNavigationObserver {
         grid = new Grid<>();
         grid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
         grid.setColumnReorderingAllowed(true);
-        grid.setVerticalScrollingEnabled(true);
         grid.setHeightFull();
-        Grid.Column<Country> countryCol = grid.addColumn(Country::getName).setHeader("Country");
-        Grid.Column<Country> populationCol = grid.addColumn(new NumberRenderer<>(Country::getPopulation, NUMBER_FORMAT))
+        grid.setVerticalScrollingEnabled(true);
+        grid.addColumn(Country::getName).setHeader("Country");
+        grid.addColumn(new NumberRenderer<>(Country::getPopulation, NUMBER_FORMAT))
                 .setHeader("Population");
-        Grid.Column<Country> totalCasesCol = grid.addColumn(new NumberRenderer<>(Country::getTotalCases, NUMBER_FORMAT)).setHeader("Total cases")
+        grid.addColumn(new NumberRenderer<>(Country::getTotalCases, NUMBER_FORMAT)).setHeader("Total cases")
                 .setClassNameGenerator(item -> {
                    if (item.getTotalCases() >= 10000) {
                         return "red-text";
                    }
                    return null;
                 });
-        Grid.Column<Country> recoveredCol = grid.addColumn(new NumberRenderer<>(Country::getTotalRecovered, NUMBER_FORMAT)).setHeader("Total recovered")
+        grid.addColumn(new NumberRenderer<>(Country::getTotalRecovered, NUMBER_FORMAT)).setHeader("Total recovered")
                 .setClassNameGenerator(item -> {
                     if (item.getTotalRecovered() > 1000) {
                         return "green-text";
                     }
                     return null;
                 });
-        Grid.Column<Country> deathCol = grid.addColumn(new NumberRenderer<>(Country::getTotalDeaths, NUMBER_FORMAT)).setHeader("Total deaths")
+        grid.addColumn(new NumberRenderer<>(Country::getTotalDeaths, NUMBER_FORMAT)).setHeader("Total deaths")
                 .setClassNameGenerator(item -> {
                     if (item.getTotalDeaths() > 1000) {
                         return "red-text";
@@ -77,20 +77,15 @@ public class MasterDetailView extends Div implements AfterNavigationObserver {
                     return null;
                 });
 
-        HeaderRow headerRow = grid.appendHeaderRow();
-        headerRow.getCell(countryCol).setComponent(createCountryFilter());
-        headerRow.getCell(populationCol).setComponent(createPopulationFilter());
-        headerRow.getCell(totalCasesCol).setComponent(createTotalCaseFilter());
-        headerRow.getCell(recoveredCol).setComponent(createRecoveredCaseFilter());
-        headerRow.getCell(deathCol).setComponent(createDeathFilter());
         grid.getColumns().forEach(col -> {
             col.setSortable(true);
             col.setResizable(true);
         });
-        add(createSummaryBoard(), grid);
+        add(createSummaryBoard(), createFilterSection(), grid);
     }
 
-    private ComboBox<Country> createCountryFilter() {
+    private HorizontalLayout createFilterSection() {
+        HorizontalLayout horizontalLayout = new HorizontalLayout();
         ComboBox<Country> searchSelector = new ComboBox<>();
         searchSelector.setItems(coronaService.findAll());
         searchSelector.setItemLabelGenerator(Country::getName);
@@ -104,65 +99,8 @@ public class MasterDetailView extends Div implements AfterNavigationObserver {
                }
            }
         });
-        return searchSelector;
-    }
-
-    private TextField createPopulationFilter() {
-        TextField toReturn = new TextField();
-        toReturn.addValueChangeListener(event -> {
-            if (event.isFromClient()) {
-                final String value = event.getValue();
-                if (StringUtils.isNotBlank(value)) {
-                    dataProvider.addFilter(item -> {
-                        Long population = item.getPopulation();
-                        if (population != null) {
-                            return population >= Long.parseLong(value);
-                        }
-                        return false;
-                    });
-                }
-            }
-        });
-        return toReturn;
-    }
-
-    private TextField createTotalCaseFilter() {
-        TextField totalCaseField = new TextField();
-        totalCaseField.addValueChangeListener(event -> {
-            if (event.isFromClient()) {
-                final String value = event.getValue();
-                if (StringUtils.isNotBlank(value)) {
-                    dataProvider.addFilter(item -> item.getTotalCases() >= Long.parseLong(value));
-                }
-            }
-        });
-        return totalCaseField;
-    }
-
-    private TextField createRecoveredCaseFilter() {
-        TextField recoveredField = new TextField();
-        recoveredField.addValueChangeListener(event -> {
-            if (event.isFromClient()) {
-                final String value = event.getValue();
-                if (StringUtils.isNotBlank(value)) {
-                    dataProvider.addFilter(item -> item.getTotalRecovered() >= Long.parseLong(value));
-                }
-            }
-        });
-        return recoveredField;
-    }
-
-    private TextField createDeathFilter() {
-        TextField deathField = new TextField();
-        deathField.addValueChangeListener(event -> {
-            if (event.isFromClient()) {
-                final String value = event.getValue();
-                if (StringUtils.isNotBlank(value)) {
-                    dataProvider.addFilter(item -> item.getTotalDeaths() >= Long.parseLong(value));
-                }
-            }
-        });
-        return deathField;
+        horizontalLayout.add(searchSelector);
+        return horizontalLayout;
     }
 
     private Board createSummaryBoard() {
