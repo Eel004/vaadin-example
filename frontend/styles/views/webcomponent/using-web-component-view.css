@@ -48,17 +48,17 @@
     }
 }
 
-@media only screen and (max-width: 1463px) and (min-width: 1440px) {
+@media only screen and (max-width: 1463px) and (min-width: 1079px) {
     .react-component-layout {
-        flex-basis: 41% !important;
+        flex-basis: 39% !important;
     }
 
     .vaadin-component-layout {
-        flex-basis: 59% !important;
+        flex-basis: 61% !important;
     }
 }
 
-@media only screen and (max-width: 1439px) {
+@media only screen and (max-width: 1078px) {
     .react-component-layout {
         flex-basis: 100% !important;
     }
